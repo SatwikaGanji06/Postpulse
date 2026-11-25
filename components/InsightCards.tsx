@@ -27,7 +27,7 @@ export default function InsightCards({ insights }: { insights: Insights }) {
       </div>
 
       <section className={`rounded-lg border border-gray-200 border-l-4 bg-white p-4 shadow-sm ${ACCENTS.indigo}`}>
-        <h3 className={`font-semibold ${TITLES.indigo}`}>Next week's plan</h3>
+        <h3 className={`font-semibold ${TITLES.indigo}`}>Next week&apos;s plan</h3>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-gray-700">
           {insights.plan.map((item, index) => (
             <li key={`${item.day}-${index}`} className="pl-1">

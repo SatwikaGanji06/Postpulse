@@ -201,7 +201,7 @@ export function byFormat(posts: Post[]): FormatStat[] {
 }
 
 // Best hour (0-23) by average engagement. Only posts with a clock time count.
-// Hours with fewer than 2 posts are ignored. Null when nothing qualifies.
+// Hours with fewer than MIN_POSTS_PER_BUCKET (4) posts are ignored. Null when nothing qualifies.
 export function bestHour(posts: Post[]): HourStat | null {
   const timed = posts.filter((post) => post.hasTime);
   if (timed.length === 0) return null;
@@ -211,7 +211,7 @@ export function bestHour(posts: Post[]): HourStat | null {
   return { hour: best.key, avgEngagementRate: best.avgEngagementRate, count: best.count };
 }
 
-// Best weekday (0 = Sunday) by average engagement, using the same 2-post minimum.
+// Best weekday (0 = Sunday) by average engagement, using the same 4-post minimum.
 export function bestWeekday(posts: Post[]): WeekdayStat | null {
   const best = bestGroup(groupPosts(posts, (post) => post.date.getDay()));
   if (!best) return null;
@@ -304,7 +304,7 @@ function groupPosts<K>(posts: Post[], keyOf: (post: Post) => K): Map<K, Post[]> 
   return groups;
 }
 
-// Highest average engagement among buckets with at least 2 posts.
+// Highest average engagement among buckets with at least MIN_POSTS_PER_BUCKET posts.
 // A tie goes to the smaller key so the result does not depend on input order.
 function bestGroup(groups: Map<number, Post[]>): { key: number; avgEngagementRate: number; count: number } | null {
   let best: { key: number; avgEngagementRate: number; count: number } | null = null;
