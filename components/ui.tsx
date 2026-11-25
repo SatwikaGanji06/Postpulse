@@ -149,3 +149,6 @@ export function Spinner({ className = "h-4 w-4" }: { className?: string }) {
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <section className={`rounded-2xl border border-line bg-white p-5 shadow-card ${className}`}>{children}</section>;
 }
+
+// Public feedback form (GitHub issue template in .github/ISSUE_TEMPLATE/feedback.yml).
+export const FEEDBACK_URL = "https://github.com/SatwikaGanji06/Postpulse/issues/new?template=feedback.yml";

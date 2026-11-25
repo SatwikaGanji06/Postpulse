@@ -4,7 +4,7 @@ import { useRef, useState, type DragEvent } from "react";
 import { useRouter } from "next/navigation";
 import Papa from "papaparse";
 import { parsePosts, computeStats, type RawRow } from "@/lib/analyze";
-import { Icon, Logo, Spinner, type IconName } from "@/components/ui";
+import { FEEDBACK_URL, Icon, Logo, Spinner, type IconName } from "@/components/ui";
 
 const MAX_BYTES = 2 * 1024 * 1024; // 2 MB
 const REQUIRED = ["date", "format", "views"];
@@ -421,7 +421,12 @@ export default function Home() {
       <footer className="border-t border-line bg-white/60">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-6 text-sm text-ink-soft sm:flex-row sm:px-6">
           <Logo />
-          <p>Free weekly report · Premium calendar &amp; captions coming soon</p>
+          <p className="text-center">
+            Free weekly report · Premium calendar &amp; captions coming soon ·{" "}
+            <a href={FEEDBACK_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand hover:underline">
+              Give feedback
+            </a>
+          </p>
         </div>
       </footer>
     </div>

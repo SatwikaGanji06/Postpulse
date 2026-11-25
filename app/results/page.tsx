@@ -6,7 +6,7 @@ import type { PeriodStat, Stats, StatsPost } from "@/lib/analyze";
 import type { Insights } from "@/app/api/insights/route";
 import FormatChart from "@/components/FormatChart";
 import InsightCards from "@/components/InsightCards";
-import { Card, Icon, Logo, Spinner, type IconName } from "@/components/ui";
+import { Card, FEEDBACK_URL, Icon, Logo, Spinner, type IconName } from "@/components/ui";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -268,6 +268,24 @@ export default function ResultsPage() {
           ) : null}
 
           {insights ? <InsightCards insights={insights} /> : null}
+        </section>
+
+        <section className="mt-4 flex flex-col items-start gap-4 rounded-2xl border border-brand/20 bg-gradient-to-r from-brand/[0.06] to-brand-violet/[0.08] p-5 sm:flex-row sm:items-center sm:justify-between print:hidden">
+          <div>
+            <h2 className="font-bold text-ink">Was this report useful?</h2>
+            <p className="mt-0.5 text-sm text-ink-soft">
+              Tell us which advice you&apos;d actually act on, and join the pilot for weekly reports.
+            </p>
+          </div>
+          <a
+            href={FEEDBACK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-lift hover:bg-brand-dark"
+          >
+            Give feedback
+            <Icon name="arrowRight" />
+          </a>
         </section>
 
         <p className="flex items-center justify-center gap-1.5 pb-4 pt-6 text-xs text-ink-soft">

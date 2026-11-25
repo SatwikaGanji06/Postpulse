@@ -1,0 +1,53 @@
+name: Feedback / join the pilot
+description: Tell us what you thought of your PostPulse report.
+title: "Feedback: "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying PostPulse! Please don't paste your CSV or any private numbers here, since issues are public.
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Where do you post?
+      multiple: true
+      options:
+        - Instagram
+        - YouTube
+        - TikTok
+        - LinkedIn
+        - Other
+  - type: dropdown
+    id: followers
+    attributes:
+      label: Roughly how many followers?
+      options:
+        - Under 500
+        - 500 – 5k
+        - 5k – 20k
+        - Over 20k
+  - type: textarea
+    id: act-on
+    attributes:
+      label: Which advice would you actually act on?
+      description: Which card or plan item was useful, and which wasn't?
+    validations:
+      required: true
+  - type: textarea
+    id: missing
+    attributes:
+      label: What was confusing or missing?
+  - type: dropdown
+    id: pilot
+    attributes:
+      label: Join the pilot?
+      description: Get weekly reports as the product grows.
+      options:
+        - "Yes, I'd like weekly reports"
+        - Not right now
+  - type: input
+    id: contact
+    attributes:
+      label: How can we reach you? (optional)
+      description: An Instagram handle or other public contact. This field is public.
