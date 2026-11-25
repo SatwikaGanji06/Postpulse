@@ -4,9 +4,7 @@
 
 PostPulse turns a small creator's analytics export into plain-English advice. Upload your data, see what's working, and get a specific plan for the week ahead.
 
-🔗 **Live demo:** [your-vercel-link-here](https://your-vercel-link-here)
-
-![PostPulse demo](docs/demo.gif)
+🔗 **Live demo:** coming soon (see [Deploy](#deploy) to host your own on Vercel)
 
 ---
 
@@ -27,10 +25,11 @@ Upload a CSV of your post analytics. PostPulse:
 - 📂 CSV upload, or one-click **sample data** demo
 - 📊 Engagement rate by format (Reel, post, story, video)
 - ⏰ Best posting hour and best weekday
-- 🏆 Top 5 and bottom 5 posts
-- 📉 30-day vs previous 30-day trend
+- 🏆 Top 5 and bottom 5 posts (never the same post in both)
+- 📉 30-day vs previous 30-day trend, for engagement and views
 - 🤖 AI insights: what's working, what's not, next week's plan, caption tips
-- 📱 Mobile-friendly UI
+- 📋 Copy next week's plan, or save the whole report as a PDF
+- 📱 Mobile-friendly UI, keyboard accessible, matches the pitch-deck branding
 - 🔒 Raw data stays in your browser; only aggregated stats are sent to the AI
 
 ## Tech Stack
@@ -70,8 +69,8 @@ Headers are case-insensitive and invalid rows are skipped. A sample file is in `
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/your-username/postpulse.git
-cd postpulse
+git clone https://github.com/SatwikaGanji06/Postpulse.git
+cd Postpulse
 
 # 2. Install dependencies
 npm install
@@ -90,7 +89,8 @@ Open [http://localhost:3000](http://localhost:3000) and click **Try sample data*
 
 | Variable | Description |
 |---|---|
-| `ANTHROPIC_API_KEY` | Your Anthropic API key (server-side only) |
+| `ANTHROPIC_API_KEY` | Your Anthropic API key (server-side only). Without it the app runs in demo mode with rule-based tips. |
+| `ANTHROPIC_MODEL` | Optional. Model id to use (default `claude-haiku-5-5`). |
 
 ## Project Structure
 
@@ -100,7 +100,7 @@ postpulse/
 │   ├── page.tsx              # Home + upload
 │   ├── results/              # Results dashboard
 │   └── api/insights/route.ts # AI insights endpoint
-├── components/               # Stat cards, charts, insight cards
+├── components/               # Shared UI, format chart, insight cards
 ├── lib/
 │   └── analyze.ts            # Pure stats functions
 ├── public/
@@ -143,4 +143,4 @@ MIT
 
 ---
 
-Built by [your-name](https://github.com/your-username) · Questions or feedback? Open an issue or reach out on [LinkedIn](https://linkedin.com/in/your-profile)
+Built by [Ganji Satwika](https://github.com/SatwikaGanji06) · Questions or feedback? [Open an issue](https://github.com/SatwikaGanji06/Postpulse/issues).

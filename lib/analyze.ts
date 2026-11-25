@@ -224,7 +224,8 @@ export function bestWeekday(posts: Post[]): WeekdayStat | null {
 }
 
 // Highest and lowest engagement. Posts under 100 views are left out of the ranking.
-// Bottom is worst-first. The two lists overlap when fewer than 2n posts qualify.
+// Bottom is worst-first. The lists never share a post: with fewer than 2n qualifying
+// posts, bottom gets only what is left after top (so one post can't be "best" and "worst").
 export function topAndBottom(posts: Post[], n = 5): { top: Post[]; bottom: Post[] } {
   const ranked = posts
     .filter((post) => post.views >= MIN_RANK_VIEWS)
@@ -233,7 +234,7 @@ export function topAndBottom(posts: Post[], n = 5): { top: Post[]; bottom: Post[
   const count = Math.max(0, Math.min(n, ranked.length));
   return {
     top: ranked.slice(0, count),
-    bottom: ranked.slice(ranked.length - count).reverse(),
+    bottom: ranked.slice(Math.max(count, ranked.length - n)).reverse(),
   };
 }
 

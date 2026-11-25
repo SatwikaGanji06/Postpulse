@@ -16,6 +16,8 @@ export type Insights = {
   captionTips: string[];
 };
 
+const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
 // One process, one map. A restart clears the window, which is fine for this limit.
 const hitsByIp = new Map<string, number[]>();
 
@@ -177,19 +179,22 @@ function mockInsights(stats: Stats): Insights {
 
   const when = hour ? ` around ${clock(hour.hour)}` : "";
   const formatName = best?.format ?? "post";
+  // Lead the week with the best weekday when we have one, then space the other posts 2 days apart.
+  const firstDay = weekday?.weekday ?? 2; // Tuesday when no best day is known
+  const [dayA, dayB, dayC] = [0, 2, 4].map((offset) => WEEKDAYS[(firstDay + offset) % 7]);
   const plan = [
     {
-      day: "Tuesday",
-      idea: `Publish a ${formatName} like your strongest ones${when}, and open with the specific result.`,
-    },
-    {
-      day: "Thursday",
+      day: dayA,
       idea: weekday
-        ? `${weekday.name} already works for you. Use Thursday for a shorter ${formatName} with the same kind of hook.`
-        : `Use Thursday for a ${formatName} with one concrete detail in the first line.`,
+        ? `${dayA} is your strongest day. Publish a ${formatName} like your best ones${when}, and open with the specific result.`
+        : `Publish a ${formatName} like your strongest ones${when}, and open with the specific result.`,
     },
     {
-      day: "Saturday",
+      day: dayB,
+      idea: `Post a shorter ${formatName} with the same kind of hook and one concrete detail in the first line.`,
+    },
+    {
+      day: dayC,
       idea: "Turn the lesson from a top post into a simpler story, and end with one question.",
     },
   ];
