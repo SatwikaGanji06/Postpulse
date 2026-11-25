@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import type { PeriodStat, Stats, StatsPost } from "@/lib/analyze";
 import type { Insights } from "@/app/api/insights/route";
@@ -10,52 +10,46 @@ import { Card, Icon, Logo, Spinner, type IconName } from "@/components/ui";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+// sessionStorage is only set on the upload page, so nothing needs to subscribe to changes.
+const noSubscribe = () => () => {};
+
+// Read a sessionStorage key during render. On the server (prerender) it is undefined.
+function useSessionItem(key: string): string | null | undefined {
+  return useSyncExternalStore(
+    noSubscribe,
+    () => sessionStorage.getItem(key),
+    () => undefined
+  );
+}
+
+type InsightsResult = { insights: Insights; source: string | null };
+
 export default function ResultsPage() {
-  const [ready, setReady] = useState(false);
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [skipped, setSkipped] = useState(0);
-  const [insights, setInsights] = useState<Insights | null>(null);
-  const [source, setSource] = useState<string | null>(null);
-  const [insightsLoading, setInsightsLoading] = useState(false);
+  const rawStats = useSessionItem("postpulse:stats");
+  const rawSkipped = useSessionItem("postpulse:skipped");
+  const rawInsights = useSessionItem("postpulse:insights");
+  const rawSource = useSessionItem("postpulse:source");
+
+  const ready = rawStats !== undefined;
+  const stats = useMemo(() => parseStats(rawStats), [rawStats]);
+  const cached = useMemo(() => parseCachedInsights(rawInsights, rawSource), [rawInsights, rawSource]);
+  const skippedValue = Number(rawSkipped);
+  const skipped = Number.isFinite(skippedValue) ? skippedValue : 0;
+
+  const [fetched, setFetched] = useState<InsightsResult | null>(null);
   const [insightsError, setInsightsError] = useState<string | null>(null);
-  // Bumped by the retry button to re-run the insights request.
-  const [attempt, setAttempt] = useState(0);
 
+  const current = fetched ?? cached;
+  const insights = current?.insights ?? null;
+  const source = current?.source ?? null;
+  // Loading is derived: we have stats, no insights yet, and the last attempt did not fail.
+  const insightsLoading = stats !== null && insights === null && insightsError === null;
+
+  // Fetch insights once per report. Clearing the error (the retry button) runs it again.
   useEffect(() => {
-    const skippedValue = Number(sessionStorage.getItem("postpulse:skipped"));
-    setSkipped(Number.isFinite(skippedValue) ? skippedValue : 0);
-
-    const raw = sessionStorage.getItem("postpulse:stats");
-    if (!raw) {
-      setReady(true);
-      return;
-    }
-
-    try {
-      const parsed = JSON.parse(raw) as Stats;
-      if (typeof parsed.totalPosts !== "number") {
-        setStats(null);
-      } else {
-        setStats(parsed);
-        const cached = readCachedInsights();
-        if (cached) {
-          setInsights(cached.insights);
-          setSource(cached.source);
-        }
-      }
-    } catch {
-      setStats(null);
-    }
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!stats || insights) return;
+    if (!stats || insights || insightsError) return;
 
     const controller = new AbortController();
-    setInsightsLoading(true);
-    setInsightsError(null);
-
     fetch("/api/insights", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -77,21 +71,17 @@ export default function ResultsPage() {
         sessionStorage.setItem("postpulse:insights", JSON.stringify(body));
         if (nextSource) sessionStorage.setItem("postpulse:source", nextSource);
         else sessionStorage.removeItem("postpulse:source");
-        setSource(nextSource);
-        setInsights(body.insights);
+        setFetched({ insights: body.insights, source: nextSource });
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
         const message =
           error instanceof Error ? error.message : "Could not generate insights. Please try again.";
         setInsightsError(message);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setInsightsLoading(false);
       });
 
     return () => controller.abort();
-  }, [stats, insights, attempt]);
+  }, [stats, insights, insightsError]);
 
   if (!ready) {
     return (
@@ -268,7 +258,7 @@ export default function ResultsPage() {
               </p>
               <button
                 type="button"
-                onClick={() => setAttempt((n) => n + 1)}
+                onClick={() => setInsightsError(null)}
                 className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-2 font-semibold text-ink shadow-card hover:text-brand"
               >
                 <Icon name="refresh" />
@@ -289,15 +279,26 @@ export default function ResultsPage() {
   );
 }
 
-function readCachedInsights(): { insights: Insights; source: string | null } | null {
-  const raw = sessionStorage.getItem("postpulse:insights");
+function parseStats(raw: string | null | undefined): Stats | null {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Stats;
+    return typeof parsed.totalPosts === "number" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function parseCachedInsights(
+  raw: string | null | undefined,
+  storedSource: string | null | undefined
+): InsightsResult | null {
   if (!raw) return null;
   try {
     const cached = JSON.parse(raw) as { insights?: Insights; source?: unknown };
     if (!cached.insights || typeof cached.insights.summary !== "string") return null;
-    const stored = sessionStorage.getItem("postpulse:source");
     const embedded = typeof cached.source === "string" ? cached.source : null;
-    return { insights: cached.insights, source: stored ?? embedded };
+    return { insights: cached.insights, source: storedSource ?? embedded };
   } catch {
     return null;
   }

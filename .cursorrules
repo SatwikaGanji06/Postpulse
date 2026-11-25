@@ -1,7 +1,7 @@
 You are helping build PostPulse, described in README.md. Read it before every task.
 
 Rules:
-- Next.js 14 App Router, TypeScript strict mode, Tailwind CSS only for styling.
+- Next.js 16 App Router, TypeScript strict mode, Tailwind CSS only for styling.
 - Keep all stats logic in lib/analyze.ts as pure functions (no UI, no fetch).
 - Never send raw post data to the server. Only aggregated stats go to /api/insights.
 - The Anthropic API key is server-side only. Never expose it to client code.

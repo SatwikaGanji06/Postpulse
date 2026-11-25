@@ -36,7 +36,7 @@ Upload a CSV of your post analytics. PostPulse:
 
 | Layer | Tech |
 |---|---|
-| Framework | Next.js 14 (App Router) + TypeScript |
+| Framework | Next.js 16 (App Router) + React 19 + TypeScript |
 | Styling | Tailwind CSS |
 | Charts | Recharts |
 | CSV parsing | PapaParse |
