@@ -62,7 +62,7 @@ Headers are case-insensitive and invalid rows are skipped. A sample file is in `
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20.9+ (required by Next.js 16)
 - An Anthropic API key from [console.anthropic.com](https://console.anthropic.com)
 
 ### Setup
