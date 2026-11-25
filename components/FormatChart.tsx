@@ -1,12 +1,18 @@
 "use client";
 
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { FormatStat } from "@/lib/analyze";
 
+const INDIGO = "#4f46e5";
+const INDIGO_DARK = "#3730a3";
+
 export default function FormatChart({ data }: { data: FormatStat[] }) {
+  // byFormat is sorted best-first, so the first row is the best format.
+  const bestFormat = data[0]?.format;
   const rows = data.map((row) => ({
     format: row.format,
     engagement: row.avgEngagementRate * 100,
+    fill: row.format === bestFormat ? INDIGO_DARK : INDIGO,
   }));
 
   return (
@@ -26,7 +32,11 @@ export default function FormatChart({ data }: { data: FormatStat[] }) {
               return [shown, "Engagement"];
             }}
           />
-          <Bar dataKey="engagement" fill="#4f46e5" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="engagement" radius={[4, 4, 0, 0]}>
+            {rows.map((row) => (
+              <Cell key={row.format} fill={row.fill} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
